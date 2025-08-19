@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - VintageFinance{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header">
+                <h1 class="vintage-page-title">
+                    <i data-feather="bar-chart-2"></i>
+                    Financial Reports
+                </h1>
+                <p class="vintage-page-subtitle">Analyze your financial patterns and trends</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Monthly Trend Chart -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="vintage-card">
+                <div class="vintage-card-header">
+                    <h3>
+                        <i data-feather="trending-up"></i>
+                        12-Month Financial Trend
+                    </h3>
+                </div>
+                <div class="vintage-card-body">
+                    {% if monthly_data %}
+                        <div class="chart-container">
+                            <canvas id="monthlyTrendChart"></canvas>
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i data-feather="bar-chart-2" class="empty-icon"></i>
+                            <h4>No data available</h4>
+                            <p>Add some transactions to see your financial trends.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Category Breakdowns -->
+    <div class="row g-4">
+        <!-- Income Categories -->
+        <div class="col-lg-6">
+            <div class="vintage-card">
+                <div class="vintage-card-header">
+                    <h3>
+                        <i data-feather="trending-up"></i>
+                        Income by Category ({{ current_year }})
+                    </h3>
+                </div>
+                <div class="vintage-card-body">
+                    {% if income_categories %}
+                        <div class="chart-container mb-4">
+                            <canvas id="incomeChart"></canvas>
+                        </div>
+                        <div class="category-breakdown">
+                            {% for category, total in income_categories %}
+                            <div class="breakdown-item">
+                                <div class="breakdown-info">
+                                    <span class="breakdown-category">{{ category }}</span>
+                                    <span class="breakdown-amount income">${{ "%.0f"|format(total) }}</span>
+                                </div>
+                                <div class="breakdown-bar">
+                                    <div class="breakdown-fill income" 
+                                         style="width: {{ (total / income_categories[0][1] * 100)|round(1) }}%"></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state small">
+                            <i data-feather="trending-up" class="empty-icon"></i>
+                            <h5>No income data</h5>
+                            <p class="small">Add income transactions to see category breakdown.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Expense Categories -->
+        <div class="col-lg-6">
+            <div class="vintage-card">
+                <div class="vintage-card-header">
+                    <h3>
+                        <i data-feather="trending-down"></i>
+                        Expenses by Category ({{ current_year }})
+                    </h3>
+                </div>
+                <div class="vintage-card-body">
+                    {% if expense_categories %}
+                        <div class="chart-container mb-4">
+                            <canvas id="expenseChart"></canvas>
+                        </div>
+                        <div class="category-breakdown">
+                            {% for category, total in expense_categories %}
+                            <div class="breakdown-item">
+                                <div class="breakdown-info">
+                                    <span class="breakdown-category">{{ category }}</span>
+                                    <span class="breakdown-amount expense">${{ "%.0f"|format(total) }}</span>
+                                </div>
+                                <div class="breakdown-bar">
+                                    <div class="breakdown-fill expense" 
+                                         style="width: {{ (total / expense_categories[0][1] * 100)|round(1) }}%"></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state small">
+                            <i data-feather="trending-down" class="empty-icon"></i>
+                            <h5>No expense data</h5>
+                            <p class="small">Add expense transactions to see category breakdown.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+    // Monthly trend chart
+    {% if monthly_data %}
+    const monthlyCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+    const monthlyData = {{ monthly_data|tojson }};
+    
+    new Chart(monthlyCtx, {
+        type: 'line',
+        data: {
+            labels: monthlyData.map(item => item.month),
+            datasets: [
+                {
+                    label: 'Income',
+                    data: monthlyData.map(item => item.income),
+                    borderColor: '#6A7A5A',
+                    backgroundColor: 'rgba(106, 122, 90, 0.1)',
+                    fill: false,
+                    tension: 0.4
+                },
+                {
+                    label: 'Expenses',
+                    data: monthlyData.map(item => item.expense),
+                    borderColor: '#BF8A7D',
+                    backgroundColor: 'rgba(191, 138, 125, 0.1)',
+                    fill: false,
+                    tension: 0.4
+                },
+                {
+                    label: 'Balance',
+                    data: monthlyData.map(item => item.balance),
+                    borderColor: '#8DAF98',
+                    backgroundColor: 'rgba(141, 175, 152, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toFixed(0);
+                        }
+                    }
+                }
+            }
+        }
+    });
+    {% endif %}
+    
+    // Income categories chart
+    {% if income_categories %}
+    const incomeCtx = document.getElementById('incomeChart').getContext('2d');
+    new Chart(incomeCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for category, total in income_categories %}{{ category|tojson }}{% if not loop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                data: [{% for category, total in income_categories %}{{ total }}{% if not loop.last %},{% endif %}{% endfor %}],
+                backgroundColor: [
+                    '#6A7A5A',
+                    '#8DAF98', 
+                    '#BED2BA',
+                    '#A8C7BA',
+                    '#7A8B6A',
+                    '#9DBF88'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+    {% endif %}
+    
+    // Expense categories chart
+    {% if expense_categories %}
+    const expenseCtx = document.getElementById('expenseChart').getContext('2d');
+    new Chart(expenseCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for category, total in expense_categories %}{{ category|tojson }}{% if not loop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                data: [{% for category, total in expense_categories %}{{ total }}{% if not loop.last %},{% endif %}{% endfor %}],
+                backgroundColor: [
+                    '#BF8A7D',
+                    '#D7CBB2',
+                    '#C7B299',
+                    '#B8A485',
+                    '#A99571',
+                    '#9A875D'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+    {% endif %}
+</script>
+{% endblock %}

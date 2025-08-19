@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - VintageFinance{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header">
+                <h1 class="vintage-page-title">
+                    <i data-feather="home"></i>
+                    Dashboard
+                </h1>
+                <p class="vintage-page-subtitle">{{ current_month }} Financial Overview</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Financial Stats -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="vintage-card stat-card income-card">
+                <div class="vintage-card-body">
+                    <div class="stat-display">
+                        <div class="stat-icon">
+                            <i data-feather="trending-up"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Total Income</div>
+                            <div class="stat-value">${{ "%.2f"|format(income_total) }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="vintage-card stat-card expense-card">
+                <div class="vintage-card-body">
+                    <div class="stat-display">
+                        <div class="stat-icon">
+                            <i data-feather="trending-down"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Total Expenses</div>
+                            <div class="stat-value">${{ "%.2f"|format(expense_total) }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="vintage-card stat-card balance-card {{ 'positive' if balance >= 0 else 'negative' }}">
+                <div class="vintage-card-body">
+                    <div class="stat-display">
+                        <div class="stat-icon">
+                            <i data-feather="{{ 'dollar-sign' if balance >= 0 else 'alert-triangle' }}"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">Net Balance</div>
+                            <div class="stat-value">
+                                {{ "+" if balance >= 0 else "-" }}${{ "%.2f"|format(balance|abs) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <!-- Recent Transactions -->
+        <div class="col-lg-8">
+            <div class="vintage-card">
+                <div class="vintage-card-header">
+                    <h3>
+                        <i data-feather="clock"></i>
+                        Recent Transactions
+                    </h3>
+                    <a href="{{ url_for('transactions') }}" class="btn vintage-btn vintage-btn-outline-primary btn-sm">
+                        <i data-feather="list"></i>
+                        View All
+                    </a>
+                </div>
+                <div class="vintage-card-body">
+                    {% if recent_transactions %}
+                        <div class="transaction-list">
+                            {% for transaction in recent_transactions %}
+                            <div class="transaction-item {{ transaction.transaction_type }}">
+                                <div class="transaction-icon">
+                                    <i data-feather="{{ 'trending-up' if transaction.transaction_type == 'income' else 'trending-down' }}"></i>
+                                </div>
+                                <div class="transaction-info">
+                                    <div class="transaction-title">{{ transaction.title }}</div>
+                                    <div class="transaction-meta">
+                                        <span class="transaction-category">{{ transaction.category }}</span>
+                                        <span class="transaction-date">{{ transaction.transaction_date.strftime('%b %d, %Y') }}</span>
+                                    </div>
+                                </div>
+                                <div class="transaction-amount {{ transaction.transaction_type }}">
+                                    {{ "+" if transaction.transaction_type == 'income' else "-" }}${{ "%.2f"|format(transaction.amount) }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i data-feather="inbox" class="empty-icon"></i>
+                            <h4>No transactions yet</h4>
+                            <p>Start tracking your finances by adding your first transaction.</p>
+                            <a href="{{ url_for('add_transaction') }}" class="btn vintage-btn vintage-btn-primary">
+                                <i data-feather="plus"></i>
+                                Add Transaction
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Expense Breakdown -->
+        <div class="col-lg-4">
+            <div class="vintage-card">
+                <div class="vintage-card-header">
+                    <h3>
+                        <i data-feather="pie-chart"></i>
+                        Expense Breakdown
+                    </h3>
+                </div>
+                <div class="vintage-card-body">
+                    {% if expense_categories %}
+                        <div class="expense-chart-container">
+                            <canvas id="expenseChart" width="300" height="300"></canvas>
+                        </div>
+                        <div class="expense-legend">
+                            {% for category, total in expense_categories[:5] %}
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: {{ loop.cycle('#6A7A5A', '#8DAF98', '#BED2BA', '#D7CBB2', '#A8C7BA') }}"></div>
+                                <div class="legend-info">
+                                    <div class="legend-category">{{ category }}</div>
+                                    <div class="legend-amount">${{ "%.0f"|format(total) }}</div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state small">
+                            <i data-feather="pie-chart" class="empty-icon"></i>
+                            <h5>No expenses to show</h5>
+                            <p class="small">Add some expense transactions to see the breakdown.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if expense_categories %}
+<script>
+    // Expense breakdown chart
+    const expenseCtx = document.getElementById('expenseChart').getContext('2d');
+    const expenseData = {
+        labels: [{% for category, total in expense_categories %}{{ category|tojson }}{% if not loop.last %},{% endif %}{% endfor %}],
+        datasets: [{
+            data: [{% for category, total in expense_categories %}{{ total }}{% if not loop.last %},{% endif %}{% endfor %}],
+            backgroundColor: [
+                '#6A7A5A',
+                '#8DAF98', 
+                '#BED2BA',
+                '#D7CBB2',
+                '#A8C7BA',
+                '#7A8B6A',
+                '#9DBF88',
+                '#CEE2CA'
+            ],
+            borderWidth: 0
+        }]
+    };
+
+    new Chart(expenseCtx, {
+        type: 'doughnut',
+        data: expenseData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}

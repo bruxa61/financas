@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}VintageFinance - Retro Financial Control{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom Vintage CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/vintage.css') }}">
+    
+    {% block head %}{% endblock %}
+</head>
+<body class="vintage-body">
+    <!-- Navigation -->
+    {% if current_user.is_authenticated %}
+    <nav class="navbar navbar-expand-lg vintage-nav fixed-top">
+        <div class="container">
+            <a class="navbar-brand vintage-brand" href="{{ url_for('dashboard') }}">
+                <i data-feather="dollar-sign" class="brand-icon"></i>
+                VintageFinance
+            </a>
+            
+            <button class="navbar-toggler vintage-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="vintage-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link vintage-nav-link {{ 'active' if request.endpoint == 'dashboard' }}" href="{{ url_for('dashboard') }}">
+                            <i data-feather="home"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link vintage-nav-link {{ 'active' if request.endpoint == 'transactions' }}" href="{{ url_for('transactions') }}">
+                            <i data-feather="list"></i> Transactions
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link vintage-nav-link {{ 'active' if request.endpoint == 'add_transaction' }}" href="{{ url_for('add_transaction') }}">
+                            <i data-feather="plus"></i> Add Transaction
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link vintage-nav-link {{ 'active' if request.endpoint == 'reports' }}" href="{{ url_for('reports') }}">
+                            <i data-feather="bar-chart-2"></i> Reports
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="navbar-nav">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle vintage-nav-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            {% if current_user.profile_image_url %}
+                                <img src="{{ current_user.profile_image_url }}" alt="Profile" class="profile-img">
+                            {% else %}
+                                <i data-feather="user"></i>
+                            {% endif %}
+                            {{ current_user.first_name or 'User' }}
+                        </a>
+                        <ul class="dropdown-menu vintage-dropdown">
+                            <li><a class="dropdown-item vintage-dropdown-item" href="{{ url_for('replit_auth.logout') }}">
+                                <i data-feather="log-out"></i> Logout
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+    
+    <!-- Main Content -->
+    <main class="main-content {{ 'with-nav' if current_user.is_authenticated else 'without-nav' }}">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container">
+                    {% for category, message in messages %}
+                        <div class="alert vintage-alert vintage-alert-{{ 'success' if category == 'success' else 'error' }} alert-dismissible fade show" role="alert">
+                            <i data-feather="{{ 'check-circle' if category == 'success' else 'alert-circle' }}"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close vintage-btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    {% block scripts %}{% endblock %}
+    
+    <script>
+        // Initialize Feather Icons
+        feather.replace();
+    </script>
+</body>
+</html>

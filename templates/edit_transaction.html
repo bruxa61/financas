@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Transaction - VintageFinance{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="page-header">
+                <h1 class="vintage-page-title">
+                    <i data-feather="edit"></i>
+                    Edit Transaction
+                </h1>
+                <p class="vintage-page-subtitle">Update transaction details</p>
+            </div>
+            
+            <div class="vintage-card">
+                <div class="vintage-card-body">
+                    <form method="POST" class="vintage-form">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label for="title" class="vintage-label required">Title</label>
+                                <input type="text" 
+                                       id="title" 
+                                       name="title" 
+                                       class="form-control vintage-form-control" 
+                                       value="{{ transaction.title }}"
+                                       placeholder="e.g., Grocery Shopping, Salary Payment"
+                                       required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="amount" class="vintage-label required">Amount</label>
+                                <div class="input-group">
+                                    <span class="input-group-text vintage-input-addon">$</span>
+                                    <input type="number" 
+                                           id="amount" 
+                                           name="amount" 
+                                           class="form-control vintage-form-control" 
+                                           step="0.01" 
+                                           min="0.01"
+                                           value="{{ transaction.amount }}"
+                                           placeholder="0.00"
+                                           required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="transaction_type" class="vintage-label required">Type</label>
+                                <select id="transaction_type" 
+                                        name="transaction_type" 
+                                        class="form-select vintage-form-control" 
+                                        required
+                                        onchange="filterCategories(this.value)">
+                                    <option value="">Select Type</option>
+                                    <option value="income" {{ 'selected' if transaction.transaction_type == 'income' else '' }}>
+                                        Income
+                                    </option>
+                                    <option value="expense" {{ 'selected' if transaction.transaction_type == 'expense' else '' }}>
+                                        Expense
+                                    </option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="category" class="vintage-label required">Category</label>
+                                <select id="category" 
+                                        name="category" 
+                                        class="form-select vintage-form-control" 
+                                        required>
+                                    <option value="">Select Category</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.name }}" 
+                                                data-type="{{ category.category_type }}"
+                                                data-icon="{{ category.icon }}"
+                                                {{ 'selected' if transaction.category == category.name else '' }}>
+                                            {{ category.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="transaction_date" class="vintage-label">Date</label>
+                                <input type="date" 
+                                       id="transaction_date" 
+                                       name="transaction_date" 
+                                       class="form-control vintage-form-control"
+                                       value="{{ transaction.transaction_date.strftime('%Y-%m-%d') }}">
+                            </div>
+                            
+                            <div class="col-12">
+                                <label for="description" class="vintage-label">Description</label>
+                                <textarea id="description" 
+                                          name="description" 
+                                          class="form-control vintage-form-control" 
+                                          rows="3" 
+                                          placeholder="Optional notes about this transaction...">{{ transaction.description or '' }}</textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn vintage-btn vintage-btn-primary">
+                                <i data-feather="check"></i>
+                                Update Transaction
+                            </button>
+                            <a href="{{ url_for('transactions') }}" class="btn vintage-btn vintage-btn-outline-secondary">
+                                <i data-feather="arrow-left"></i>
+                                Back to Transactions
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function filterCategories(type) {
+        const categorySelect = document.getElementById('category');
+        const options = categorySelect.querySelectorAll('option');
+        
+        options.forEach(option => {
+            if (option.value === '') {
+                option.style.display = 'block';
+                return;
+            }
+            
+            const categoryType = option.dataset.type;
+            if (!type || categoryType === type) {
+                option.style.display = 'block';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+    }
+    
+    // Initialize categories filter on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const typeSelect = document.getElementById('transaction_type');
+        if (typeSelect.value) {
+            filterCategories(typeSelect.value);
+        }
+    });
+</script>
+{% endblock %}
