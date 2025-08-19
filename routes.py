@@ -40,11 +40,10 @@ def init_default_categories():
     
     for name, category_type, icon in default_categories:
         if not Category.query.filter_by(name=name).first():
-            category = Category(
-                name=name, 
-                category_type=category_type, 
-                icon=icon
-            )
+            category = Category()
+            category.name = name
+            category.category_type = category_type
+            category.icon = icon
             db.session.add(category)
     
     db.session.commit()
@@ -182,15 +181,14 @@ def add_transaction():
             return redirect(url_for('add_transaction'))
         
         # Create transaction
-        transaction = Transaction(
-            user_id=current_user.id,
-            title=title,
-            amount=amount,
-            transaction_type=transaction_type,
-            category=category,
-            description=description,
-            transaction_date=date_obj
-        )
+        transaction = Transaction()
+        transaction.user_id = current_user.id
+        transaction.title = title
+        transaction.amount = amount
+        transaction.transaction_type = transaction_type
+        transaction.category = category
+        transaction.description = description
+        transaction.transaction_date = date_obj
         
         db.session.add(transaction)
         db.session.commit()
@@ -199,7 +197,6 @@ def add_transaction():
         return redirect(url_for('transactions'))
     
     # GET request - show form
-    from datetime import datetime
     categories = Category.query.all()
     return render_template('add_transaction.html', categories=categories, datetime=datetime)
 
@@ -239,7 +236,7 @@ def edit_transaction(transaction_id):
             else:
                 date_obj = datetime.now().date()
         except ValueError:
-            flash('Please enter a valid date.', 'error')
+            flash('Por favor, digite uma data válida.', 'error')
             return redirect(url_for('edit_transaction', transaction_id=transaction_id))
         
         # Update transaction
@@ -259,7 +256,8 @@ def edit_transaction(transaction_id):
     categories = Category.query.all()
     return render_template('edit_transaction.html', 
                          transaction=transaction, 
-                         categories=categories)
+                         categories=categories,
+                         datetime=datetime)
 
 @app.route('/delete_transaction/<int:transaction_id>')
 @require_login
