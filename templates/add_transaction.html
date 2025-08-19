@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Add Transaction - VintageFinance{% endblock %}
+{% block title %}Nova Transação - FinançasVerde{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -9,9 +9,9 @@
             <div class="page-header">
                 <h1 class="vintage-page-title">
                     <i data-feather="plus"></i>
-                    Add Transaction
+                    Nova Transação
                 </h1>
-                <p class="vintage-page-subtitle">Record a new income or expense transaction</p>
+                <p class="vintage-page-subtitle">Registre uma nova receita ou despesa</p>
             </div>
             
             <div class="vintage-card">
@@ -19,19 +19,19 @@
                     <form method="POST" class="vintage-form">
                         <div class="row g-4">
                             <div class="col-md-6">
-                                <label for="title" class="vintage-label required">Title</label>
+                                <label for="title" class="vintage-label required">Título</label>
                                 <input type="text" 
                                        id="title" 
                                        name="title" 
                                        class="form-control vintage-form-control" 
-                                       placeholder="e.g., Grocery Shopping, Salary Payment"
+                                       placeholder="ex: Compras no mercado, Salário"
                                        required>
                             </div>
                             
                             <div class="col-md-6">
-                                <label for="amount" class="vintage-label required">Amount</label>
+                                <label for="amount" class="vintage-label required">Valor</label>
                                 <div class="input-group">
-                                    <span class="input-group-text vintage-input-addon">$</span>
+                                    <span class="input-group-text vintage-input-addon">R$</span>
                                     <input type="number" 
                                            id="amount" 
                                            name="amount" 
@@ -44,29 +44,29 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <label for="transaction_type" class="vintage-label required">Type</label>
+                                <label for="transaction_type" class="vintage-label required">Tipo</label>
                                 <select id="transaction_type" 
                                         name="transaction_type" 
                                         class="form-select vintage-form-control" 
                                         required
                                         onchange="filterCategories(this.value)">
-                                    <option value="">Select Type</option>
+                                    <option value="">Selecione o Tipo</option>
                                     <option value="income">
-                                        Income
+                                        Receita
                                     </option>
                                     <option value="expense">
-                                        Expense
+                                        Despesa
                                     </option>
                                 </select>
                             </div>
                             
                             <div class="col-md-6">
-                                <label for="category" class="vintage-label required">Category</label>
+                                <label for="category" class="vintage-label required">Categoria</label>
                                 <select id="category" 
                                         name="category" 
                                         class="form-select vintage-form-control" 
                                         required>
-                                    <option value="">Select Category</option>
+                                    <option value="">Selecione a Categoria</option>
                                     {% for category in categories %}
                                         <option value="{{ category.name }}" 
                                                 data-type="{{ category.category_type }}"
@@ -78,7 +78,7 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <label for="transaction_date" class="vintage-label">Date</label>
+                                <label for="transaction_date" class="vintage-label">Data</label>
                                 <input type="date" 
                                        id="transaction_date" 
                                        name="transaction_date" 
@@ -87,23 +87,23 @@
                             </div>
                             
                             <div class="col-12">
-                                <label for="description" class="vintage-label">Description</label>
+                                <label for="description" class="vintage-label">Descrição</label>
                                 <textarea id="description" 
                                           name="description" 
                                           class="form-control vintage-form-control" 
                                           rows="3" 
-                                          placeholder="Optional notes about this transaction..."></textarea>
+                                          placeholder="Notas opcionais sobre esta transação..."></textarea>
                             </div>
                         </div>
                         
                         <div class="form-actions">
                             <button type="submit" class="btn vintage-btn vintage-btn-primary">
                                 <i data-feather="check"></i>
-                                Add Transaction
+                                Adicionar Transação
                             </button>
                             <a href="{{ url_for('transactions') }}" class="btn vintage-btn vintage-btn-outline-secondary">
                                 <i data-feather="x"></i>
-                                Cancel
+                                Cancelar
                             </a>
                         </div>
                     </form>

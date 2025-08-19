@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}VintageFinance - Retro Financial Control{% endblock %}</title>
+    <title>{% block title %}FinançasVerde - Controle Financeiro{% endblock %}</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -25,8 +25,8 @@
     <nav class="navbar navbar-expand-lg vintage-nav fixed-top">
         <div class="container">
             <a class="navbar-brand vintage-brand" href="{{ url_for('dashboard') }}">
-                <i data-feather="dollar-sign" class="brand-icon"></i>
-                VintageFinance
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="FinançasVerde" class="brand-icon">
+                FinançasVerde
             </a>
             
             <button class="navbar-toggler vintage-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -37,22 +37,22 @@
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link vintage-nav-link {{ 'active' if request.endpoint == 'dashboard' }}" href="{{ url_for('dashboard') }}">
-                            <i data-feather="home"></i> Dashboard
+                            <i data-feather="home"></i> Painel
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link vintage-nav-link {{ 'active' if request.endpoint == 'transactions' }}" href="{{ url_for('transactions') }}">
-                            <i data-feather="list"></i> Transactions
+                            <i data-feather="list"></i> Transações
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link vintage-nav-link {{ 'active' if request.endpoint == 'add_transaction' }}" href="{{ url_for('add_transaction') }}">
-                            <i data-feather="plus"></i> Add Transaction
+                            <i data-feather="plus"></i> Nova Transação
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link vintage-nav-link {{ 'active' if request.endpoint == 'reports' }}" href="{{ url_for('reports') }}">
-                            <i data-feather="bar-chart-2"></i> Reports
+                            <i data-feather="bar-chart-2"></i> Relatórios
                         </a>
                     </li>
                 </ul>
@@ -69,7 +69,7 @@
                         </a>
                         <ul class="dropdown-menu vintage-dropdown">
                             <li><a class="dropdown-item vintage-dropdown-item" href="{{ url_for('replit_auth.logout') }}">
-                                <i data-feather="log-out"></i> Logout
+                                <i data-feather="log-out"></i> Sair
                             </a></li>
                         </ul>
                     </div>

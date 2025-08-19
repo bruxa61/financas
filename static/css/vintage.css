@@ -122,6 +122,19 @@
 .brand-icon {
   width: 28px;
   height: 28px;
+  border-radius: 50%;
+}
+
+.login-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.feature-icon-small {
+  width: 24px;
+  height: 24px;
+  color: var(--morning-blue);
 }
 
 .vintage-nav-link {
@@ -540,10 +553,45 @@
    Landing Page
    ============================================================================= */
 
-.landing-hero {
+.login-hero {
   background: linear-gradient(135deg, var(--vintage-cream) 0%, var(--jet-stream) 100%);
   position: relative;
   overflow: hidden;
+  padding: 2rem 0;
+}
+
+.login-card {
+  max-width: 450px;
+  margin: 0 auto;
+  box-shadow: 0 10px 30px rgba(106, 122, 90, 0.15);
+}
+
+.login-header {
+  text-align: center;
+}
+
+.login-options .btn {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.login-help-text {
+  color: var(--morning-blue);
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+
+.login-features {
+  border-top: 1px solid var(--jet-stream);
+  padding-top: 1.5rem;
+}
+
+.login-features small {
+  color: var(--axolotl);
+  font-weight: 500;
+  display: block;
 }
 
 .landing-hero::before {

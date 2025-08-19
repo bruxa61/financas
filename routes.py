@@ -19,23 +19,23 @@ def make_session_permanent():
 def init_default_categories():
     """Initialize default transaction categories if they don't exist"""
     default_categories = [
-        # Income categories
-        ('Salary', 'income', 'briefcase'),
+        # Categorias de Receita
+        ('Salário', 'income', 'briefcase'),
         ('Freelance', 'income', 'edit-3'),
-        ('Investment', 'income', 'trending-up'),
-        ('Gift', 'income', 'gift'),
-        ('Other Income', 'income', 'plus'),
+        ('Investimentos', 'income', 'trending-up'),
+        ('Presentes', 'income', 'gift'),
+        ('Outras Receitas', 'income', 'plus'),
         
-        # Expense categories
-        ('Food & Dining', 'expense', 'coffee'),
-        ('Transportation', 'expense', 'truck'),
-        ('Shopping', 'expense', 'shopping-bag'),
-        ('Entertainment', 'expense', 'film'),
-        ('Bills & Utilities', 'expense', 'zap'),
-        ('Healthcare', 'expense', 'heart'),
-        ('Education', 'expense', 'book'),
-        ('Travel', 'expense', 'map-pin'),
-        ('Other Expense', 'expense', 'minus'),
+        # Categorias de Despesas
+        ('Alimentação', 'expense', 'coffee'),
+        ('Transporte', 'expense', 'truck'),
+        ('Compras', 'expense', 'shopping-bag'),
+        ('Entretenimento', 'expense', 'film'),
+        ('Contas e Utilidades', 'expense', 'zap'),
+        ('Saúde', 'expense', 'heart'),
+        ('Educação', 'expense', 'book'),
+        ('Viagens', 'expense', 'map-pin'),
+        ('Outras Despesas', 'expense', 'minus'),
     ]
     
     for name, category_type, icon in default_categories:
@@ -161,7 +161,7 @@ def add_transaction():
         
         # Validation
         if not all([title, amount, transaction_type, category]):
-            flash('Please fill in all required fields.', 'error')
+            flash('Por favor, preencha todos os campos obrigatórios.', 'error')
             return redirect(url_for('add_transaction'))
         
         try:
@@ -169,7 +169,7 @@ def add_transaction():
             if amount <= 0:
                 raise ValueError("Amount must be positive")
         except (ValueError, TypeError):
-            flash('Please enter a valid positive amount.', 'error')
+            flash('Por favor, digite um valor positivo válido.', 'error')
             return redirect(url_for('add_transaction'))
         
         try:
@@ -178,7 +178,7 @@ def add_transaction():
             else:
                 date_obj = datetime.now().date()
         except ValueError:
-            flash('Please enter a valid date.', 'error')
+            flash('Por favor, digite uma data válida.', 'error')
             return redirect(url_for('add_transaction'))
         
         # Create transaction
@@ -195,12 +195,13 @@ def add_transaction():
         db.session.add(transaction)
         db.session.commit()
         
-        flash('Transaction added successfully!', 'success')
+        flash('Transação adicionada com sucesso!', 'success')
         return redirect(url_for('transactions'))
     
     # GET request - show form
+    from datetime import datetime
     categories = Category.query.all()
-    return render_template('add_transaction.html', categories=categories)
+    return render_template('add_transaction.html', categories=categories, datetime=datetime)
 
 @app.route('/edit_transaction/<int:transaction_id>', methods=['GET', 'POST'])
 @require_login
@@ -251,7 +252,7 @@ def edit_transaction(transaction_id):
         
         db.session.commit()
         
-        flash('Transaction updated successfully!', 'success')
+        flash('Transação atualizada com sucesso!', 'success')
         return redirect(url_for('transactions'))
     
     # GET request - show form
@@ -272,7 +273,7 @@ def delete_transaction(transaction_id):
     db.session.delete(transaction)
     db.session.commit()
     
-    flash('Transaction deleted successfully!', 'success')
+    flash('Transação excluída com sucesso!', 'success')
     return redirect(url_for('transactions'))
 
 @app.route('/reports')

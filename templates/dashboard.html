@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - VintageFinance{% endblock %}
+{% block title %}Painel - FinançasVerde{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -9,9 +9,9 @@
             <div class="page-header">
                 <h1 class="vintage-page-title">
                     <i data-feather="home"></i>
-                    Dashboard
+                    Painel
                 </h1>
-                <p class="vintage-page-subtitle">{{ current_month }} Financial Overview</p>
+                <p class="vintage-page-subtitle">Resumo Financeiro - {{ current_month }}</p>
             </div>
         </div>
     </div>
@@ -26,8 +26,8 @@
                             <i data-feather="trending-up"></i>
                         </div>
                         <div class="stat-info">
-                            <div class="stat-label">Total Income</div>
-                            <div class="stat-value">${{ "%.2f"|format(income_total) }}</div>
+                            <div class="stat-label">Receitas Totais</div>
+                            <div class="stat-value">R$ {{ "%.2f"|format(income_total) }}</div>
                         </div>
                     </div>
                 </div>
@@ -42,8 +42,8 @@
                             <i data-feather="trending-down"></i>
                         </div>
                         <div class="stat-info">
-                            <div class="stat-label">Total Expenses</div>
-                            <div class="stat-value">${{ "%.2f"|format(expense_total) }}</div>
+                            <div class="stat-label">Despesas Totais</div>
+                            <div class="stat-value">R$ {{ "%.2f"|format(expense_total) }}</div>
                         </div>
                     </div>
                 </div>
@@ -58,9 +58,9 @@
                             <i data-feather="{{ 'dollar-sign' if balance >= 0 else 'alert-triangle' }}"></i>
                         </div>
                         <div class="stat-info">
-                            <div class="stat-label">Net Balance</div>
+                            <div class="stat-label">Saldo Líquido</div>
                             <div class="stat-value">
-                                {{ "+" if balance >= 0 else "-" }}${{ "%.2f"|format(balance|abs) }}
+                                {{ "+" if balance >= 0 else "-" }}R$ {{ "%.2f"|format(balance|abs) }}
                             </div>
                         </div>
                     </div>
@@ -76,11 +76,11 @@
                 <div class="vintage-card-header">
                     <h3>
                         <i data-feather="clock"></i>
-                        Recent Transactions
+                        Transações Recentes
                     </h3>
                     <a href="{{ url_for('transactions') }}" class="btn vintage-btn vintage-btn-outline-primary btn-sm">
                         <i data-feather="list"></i>
-                        View All
+                        Ver Todas
                     </a>
                 </div>
                 <div class="vintage-card-body">
@@ -99,7 +99,7 @@
                                     </div>
                                 </div>
                                 <div class="transaction-amount {{ transaction.transaction_type }}">
-                                    {{ "+" if transaction.transaction_type == 'income' else "-" }}${{ "%.2f"|format(transaction.amount) }}
+                                    {{ "+" if transaction.transaction_type == 'income' else "-" }}R$ {{ "%.2f"|format(transaction.amount) }}
                                 </div>
                             </div>
                             {% endfor %}
@@ -107,11 +107,11 @@
                     {% else %}
                         <div class="empty-state">
                             <i data-feather="inbox" class="empty-icon"></i>
-                            <h4>No transactions yet</h4>
-                            <p>Start tracking your finances by adding your first transaction.</p>
+                            <h4>Nenhuma transação ainda</h4>
+                            <p>Comece a controlar suas finanças adicionando sua primeira transação.</p>
                             <a href="{{ url_for('add_transaction') }}" class="btn vintage-btn vintage-btn-primary">
                                 <i data-feather="plus"></i>
-                                Add Transaction
+                                Nova Transação
                             </a>
                         </div>
                     {% endif %}
@@ -125,7 +125,7 @@
                 <div class="vintage-card-header">
                     <h3>
                         <i data-feather="pie-chart"></i>
-                        Expense Breakdown
+                        Divisão de Gastos
                     </h3>
                 </div>
                 <div class="vintage-card-body">
@@ -139,7 +139,7 @@
                                 <div class="legend-color" style="background-color: {{ loop.cycle('#6A7A5A', '#8DAF98', '#BED2BA', '#D7CBB2', '#A8C7BA') }}"></div>
                                 <div class="legend-info">
                                     <div class="legend-category">{{ category }}</div>
-                                    <div class="legend-amount">${{ "%.0f"|format(total) }}</div>
+                                    <div class="legend-amount">R$ {{ "%.0f"|format(total) }}</div>
                                 </div>
                             </div>
                             {% endfor %}
@@ -147,8 +147,8 @@
                     {% else %}
                         <div class="empty-state small">
                             <i data-feather="pie-chart" class="empty-icon"></i>
-                            <h5>No expenses to show</h5>
-                            <p class="small">Add some expense transactions to see the breakdown.</p>
+                            <h5>Nenhuma despesa para mostrar</h5>
+                            <p class="small">Adicione algumas transações de despesa para ver a divisão.</p>
                         </div>
                     {% endif %}
                 </div>
